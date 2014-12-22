@@ -6,9 +6,6 @@ firstboot = {cwd}/firstboot.sh
 # AMD 64 architectur
 arch = amd64
 
-suite = trusty
-flavour = virtual
-
 # No domain - detect from host
 part = vmbuilder.partition
 user = administrator
@@ -23,8 +20,12 @@ mac = {mac}
 
 [ubuntu]
 mirror = ftp://ftp.snt.utwente.nl/pub/linux/ubuntu/
-suite = lucid
-flavour = trusty
+suite = trusty
+flavour = virtual
 components = main,universe,restricted,multiverse
 
-addpkg = openssh-server, unattended-upgrades, acpid, vim-nox, tmux, git-all, ntp
+timezone = Europe/Amsterdam
+
+# only install very basic packages here - use the first boot script for the
+# remainder.
+addpkg = openssh-server, unattended-upgrades, acpid, linux-image-generic

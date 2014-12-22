@@ -44,7 +44,7 @@ def which(fn):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='A ubuntu-vm-builder wrapper')
-    parser.add_argument('hostname', nargs=1, help='The VM hostname')
+    parser.add_argument('hostname', help='The VM hostname')
     parser.add_argument('--really_run', action='store_true',
         help='Really call the ubuntu-vm-builder')
 
@@ -60,10 +60,10 @@ if __name__ == "__main__":
     #
     print("Provision the vm by calling:")
     execv_args = ['kvm', 'ubuntu', '-c',
-             './{cfg}'.format(vmbuilder_cfgfile), 
-             '--hostname={host}'.format(hostname)]
+             './{cfg}'.format(cfg=vmbuilder_cfgfile), 
+             '--hostname={host}'.format(host=args.hostname)]
 
-    printf("> ubuntu-vm-builder {}".format(" ".join(execv)))
+    print("> ubuntu-vm-builder {}".format(" ".join(execv_args)))
     
     if args.really_run:
         os.execv(which('ubuntu-vm-builder'), execv_args)

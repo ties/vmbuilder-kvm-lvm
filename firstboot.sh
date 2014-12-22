@@ -6,4 +6,5 @@ passwd -e administrator
 
 # Install openssh-server
 apt-get update
-apt-get upgrade --yes
+apt-get upgrade
+apt-get install -qqy --force-yes vim-nox tmux git-all ntp
