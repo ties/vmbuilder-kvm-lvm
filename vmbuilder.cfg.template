@@ -27,4 +27,4 @@ suite = lucid
 flavour = trusty
 components = main,universe,restricted,multiverse
 
-addpkg = openssh-server, unattended-upgrades, acpid, vim-nox, tmux, git, ntp
+addpkg = openssh-server, unattended-upgrades, acpid, vim-nox, tmux, git-all, ntp
