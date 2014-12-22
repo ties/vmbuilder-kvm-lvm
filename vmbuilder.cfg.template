@@ -8,6 +8,8 @@ arch = amd64
 
 # No domain - detect from host
 part = vmbuilder.partition
+mem = {mem}
+
 user = administrator
 name = Local Admin
 pass = CHANGE_ME_AFTER_INSTALL
