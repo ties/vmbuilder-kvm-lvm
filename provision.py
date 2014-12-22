@@ -1,9 +1,6 @@
 import os
 import hashlib
-import binascii
-
-hostname = "pm-vm"
-
+import argparse
 
 #
 # Random data for mac:
@@ -21,27 +18,52 @@ def random_mac():
 
 
 
-mac = random_mac()
-#
-# Generate vmbuilder config:
-#
-vmbuilder_cfgfile = 'vmbuilder_{}.cfg'.format(hostname)
+def generate_config(hostname, cfg_file):
+    mac = random_mac()
+    #
+    # Generate vmbuilder config:
+    #
 
-with open('vmbuilder.cfg.template', 'r') as f:
-    vmbuilder_config = f.read()
+    with open('vmbuilder.cfg.template', 'r') as f:
+        vmbuilder_config = f.read()
 
-    # Add full path
-    cwd = os.getcwd()
+        # Add full path
+        cwd = os.getcwd()
 
-    vmbuilder_config = vmbuilder_config.format(cwd=cwd, mac=mac)
+        vmbuilder_config = vmbuilder_config.format(cwd=cwd, mac=mac)
 
-    with open(vmbuilder_cfgfile, 'w') as cfg_out:
-        cfg_out.write(vmbuilder_config)
+        with open(vmbuilder_cfgfile, 'w') as cfg_out:
+            cfg_out.write(vmbuilder_config)
 
-#
-# Print the vmbuilder command:
-#
-print("Provision the vm with:")
-print("> ubuntu-vm-builder kvm ubuntu -c ./{cfg} --hostname={host}".format(
-    cfg=vmbuilder_cfgfile, host=hostname))
+def which(fn):
+    for path in os.environ["PATH"].split(":"):
+        if os.path.exists(os.path.join(path, fn)):
+                return os.path.join(path, fn)
 
+    return None
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='A ubuntu-vm-builder wrapper')
+    parser.add_argument('hostname', nargs=1, help='The VM hostname')
+    parser.add_argument('--really_run', action='store_true',
+        help='Really call the ubuntu-vm-builder')
+
+    args = parser.parse_args()
+
+    vmbuilder_cfgfile = "vmbuilder_{}.cfg".format(args.hostname)
+    # Generate the config
+    generate_config(args.hostname, vmbuilder_cfgfile)
+
+
+    #
+    # Print the vmbuilder command:
+    #
+    print("Provision the vm by calling:")
+    execv_args = ['kvm', 'ubuntu', '-c',
+             './{cfg}'.format(vmbuilder_cfgfile), 
+             '--hostname={host}'.format(hostname)]
+
+    printf("> ubuntu-vm-builder {}".format(" ".join(execv)))
+    
+    if args.really_run:
+        os.execv(which('ubuntu-vm-builder'), execv_args)
