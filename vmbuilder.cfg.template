@@ -19,6 +19,7 @@ pass = CHANGE_ME_AFTER_INSTALL
 libvirt = qemu:///system
 bridge = br0
 virtio_net = true
+mac = {mac}
 
 [ubuntu]
 mirror = ftp://ftp.snt.utwente.nl/pub/linux/ubuntu/
