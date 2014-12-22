@@ -1,7 +1,7 @@
 [DEFAULT]
 # Two GB of storage for tmpfs
 tmpfs = suid,dev,size=2G
-firstboot = firstboot.sh
+firstboot = {cwd}/firstboot.sh
 
 # AMD 64 architectur
 arch = amd64
@@ -17,7 +17,6 @@ pass = CHANGE_ME_AFTER_INSTALL
 
 [kvm]
 libvirt = qemu:///system
-#network = br0
 bridge = br0
 virtio_net = true
 

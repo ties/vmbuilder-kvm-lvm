@@ -1,6 +1,6 @@
 # Provisioning command
 ```
-ubuntu-vm-builder kvm ubuntu -c ./vmbuilder.cfg 
+ubuntu-vm-builder kvm ubuntu -c ./vmbuilder.cfg --mac [MAC_ADDRESS]
 ```
 
 
