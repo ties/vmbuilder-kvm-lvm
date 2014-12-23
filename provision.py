@@ -53,56 +53,6 @@ def which(fn):
 
     return None
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='A ubuntu-vm-builder wrapper')
-    parser.add_argument('hostname', help='The VM hostname')
-    parser.add_argument('--lvm_vg', help='The LVM volume group to copy to')
-    parser.add_argument('--mac', help="The mac address", default=random_mac())
-    parser.add_argument('--mem', help="Amount of memory (MB)", default=1024)
-    parser.add_argument('--really_run', action='store_true',
-                        help='Really call the ubuntu-vm-builder')
-
-    args = parser.parse_args()
-
-    if not os.path.isdir('templated_configs'):
-        os.mkdir('templated_configs')
-
-    image_dir = "images/{}".format(args.hostname)
-
-    if os.path.isdir(image_dir):
-        print("The directory '{}' should not exist! - exiting.".format(image_dir))
-        exit()
-
-    vmbuilder_cfgfile = "templated_configs/vmbuilder_{}.cfg".format(args.hostname)
-    # Generate the config
-    generate_config(vmbuilder_cfgfile, args)
-
-
-    #
-    # Print the vmbuilder command:
-    #
-    cwd = os.getcwd()
-    print("Provision the vm by calling:")
-    execv_args = [which('ubuntu-vm-builder'), 'kvm', 'ubuntu', '-c',
-                  './{cfg}'.format(cfg=vmbuilder_cfgfile), 
-                  '-d', image_dir, '--part={cwd}/vmbuilder.partition'.format(cwd=cwd),
-                  '--hostname={host}'.format(host=args.hostname)]
-
-    print("> ubuntu-vm-builder {}".format(" ".join(execv_args)))
-    
-    if args.really_run:
-        subprocess.check_call(execv_args)
-    
-    if args.lvm_vg:
-        # find the qcow images:
-        for path, _, filenames in os.walk(image_dir):
-            for idx, qcow in enumerate([os.path.join(path, filename) for filename in filenames]):
-                target_lv = "disk{}".format(idx)
-                
-                log.info("{} -> {}/{}".format(qcow, args.lvm_vg, target_lv))
-                if args.really_run:
-                    qcow_to_lvm(qcow, args.lvm_vg, target_lv)
-
 # Create LVM volume of size (in bytes):
 def lvm_vg_create(vg_name, lv_name, size):
     vg = lvm.vgOpen(vg_name, 'w')
@@ -160,3 +110,54 @@ def qcow_to_lvm(qcow, vg_name, lv_name):
     log.info("copying {} -> {}".format(qcow, lv_device))
     subprocess.check_call([which('qemu-img'), 'convert', qcow, '-O', 'raw', lv_device])
 
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='A ubuntu-vm-builder wrapper')
+    parser.add_argument('hostname', help='The VM hostname')
+    parser.add_argument('--lvm_vg', help='The LVM volume group to copy to')
+    parser.add_argument('--mac', help="The mac address", default=random_mac())
+    parser.add_argument('--mem', help="Amount of memory (MB)", default=1024)
+    parser.add_argument('--really_run', action='store_true',
+                        help='Really call the ubuntu-vm-builder')
+
+    args = parser.parse_args()
+
+    if not os.path.isdir('templated_configs'):
+        os.mkdir('templated_configs')
+
+    image_dir = "images/{}".format(args.hostname)
+
+    if os.path.isdir(image_dir):
+        print("The directory '{}' should not exist! - exiting.".format(image_dir))
+        exit()
+
+    vmbuilder_cfgfile = "templated_configs/vmbuilder_{}.cfg".format(args.hostname)
+    # Generate the config
+    generate_config(vmbuilder_cfgfile, args)
+
+
+    #
+    # Print the vmbuilder command:
+    #
+    cwd = os.getcwd()
+    print("Provision the vm by calling:")
+    execv_args = [which('ubuntu-vm-builder'), 'kvm', 'ubuntu', '-c',
+                  './{cfg}'.format(cfg=vmbuilder_cfgfile),
+		  '--templates={}'.format(os.path.abspath('libvirt_templates')),
+                  '-d', image_dir, '--part={cwd}/vmbuilder.partition'.format(cwd=cwd),
+                  '--hostname={host}'.format(host=args.hostname)]
+
+    print("> ubuntu-vm-builder {}".format(" ".join(execv_args)))
+    
+    if args.really_run:
+        subprocess.check_call(execv_args)
+    
+    if args.lvm_vg:
+        # find the qcow images:
+        for path, _, filenames in os.walk(image_dir):
+            for idx, qcow in enumerate([os.path.join(path, filename) for filename in filenames]):
+                target_lv = "{}-disk{}".format(args.hostname, idx)
+                
+                log.info("{} -> {}/{}".format(qcow, args.lvm_vg, target_lv))
+                if args.really_run:
+                    qcow_to_lvm(qcow, args.lvm_vg, target_lv)

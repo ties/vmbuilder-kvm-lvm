@@ -4,15 +4,12 @@
   * python-parted (apt)
   * python-lvm (compile, needs liblvm2-dev)
 
+## Post-provisioning:
+There exists a VM with a XML config file that is broken;
+The source for the filesystems should point to the correct
+LVM device (so fix the `source dev='...` line).
+
 ```
-python provision.py [hostname] --mem [mem] --mac [mac] --really_run
-qemu-img convert [qcow2] -O raw /dev/[vg]/[lv]
-modprobe nbd max_part=16
-qemu-nbd -c /dev/nbd[number] [image]
-parted /dev/[nbdname] unit MB print
-
-lvcreate [vgroup] -n [volume] -L [size]
-
 vim /etc/libvirt/qemu/[hostname.xml]
 ```
 
