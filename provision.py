@@ -143,7 +143,7 @@ if __name__ == "__main__":
     print("Provision the vm by calling:")
     execv_args = [which('ubuntu-vm-builder'), 'kvm', 'ubuntu', '-c',
                   './{cfg}'.format(cfg=vmbuilder_cfgfile),
-		  '--templates={}'.format(os.path.abspath('libvirt_templates')),
+		  '--templates={}'.format(os.path.abspath('vmbuilder_templates')),
                   '-d', image_dir, '--part={cwd}/vmbuilder.partition'.format(cwd=cwd),
                   '--hostname={host}'.format(host=args.hostname)]
 
