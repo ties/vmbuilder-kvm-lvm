@@ -69,10 +69,11 @@ if __name__ == "__main__":
     #
     # Print the vmbuilder command:
     #
+    cwd = os.getcwd()
     print("Provision the vm by calling:")
     execv_args = ['ubuntu-vm-builder', 'kvm', 'ubuntu', '-c',
              './{cfg}'.format(cfg=vmbuilder_cfgfile), 
-	     '-d', image_dir,
+	     '-d', image_dir, '--part={cwd}/vmbuilder.partition'.format(cwd=cwd),
              '--hostname={host}'.format(host=args.hostname)]
 
     print("> ubuntu-vm-builder {}".format(" ".join(execv_args)))
